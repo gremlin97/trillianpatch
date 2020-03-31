@@ -2,6 +2,7 @@
 
 set -ex
 
+# This file should be in the scripts directory of the trillian checkout
 usage() {
   cat <<EOF
 $(basename $0) [--force] [--verbose] ...
