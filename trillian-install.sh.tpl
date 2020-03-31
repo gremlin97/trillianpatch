@@ -2,9 +2,6 @@
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 set -xe
 
-# This file should be in the examples/deployment/aws directory of the trillian checkout
-# This is the user-data file for the AWS EC2 instance 
-
 yum update -y
 yum install -y git mysql
 
@@ -16,8 +13,6 @@ export PATH=$PATH:/usr/local/go/bin
 # This has to be done since the go get command is erroring out on missing packages
 export BASE_DIR=/go/src/github.com/google/
 export TRILLIAN_CHECKOUT=$BASE_DIR/trillian
-
-# The GOCACHE is peculiar to the fact that this script runs before the users are created . Normally this is a directory of .cache in the user's HOME directory
 
 mkdir -p $BASE_DIR
 export GOPATH=/go
@@ -47,7 +42,8 @@ export MYSQL_HOST=${HOST_FROM_TF}
 # To be obtained from wget 
 #curl http://169.254.169.254/latest/meta-data/local-ipv4
 # this is different from the other variables since doing this in terraform results in a Cycle error
-
+export MYSQL_USER_HOST=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
+export HOST=`curl http://169.254.169.254/latest/meta-data/public-hostname`
 # This is a temporary patch so that the sql errors in the script are fixed. 
 curl -o scripts/resetdb.sh https://raw.githubusercontent.com/hvram1/trillianpatch/master/resetdb.sh
 ./scripts/resetdb.sh --verbose --force
